@@ -20,19 +20,6 @@ Assignment Marker is a locally hosted, desktop-native Python application for tea
 - **Clipboard Integration**: Easily copy their row details (including marks, totals, and notes) instantly into your system clipboard in clean text.
 - **Robust Persistence**: Operates entirely stateless offline; everything saves autonomously to a local JSON file (`data.txt`) so your progress is guaranteed safe between sessions.
 
-## Setup
-
-1. **Prerequisites**: Ensure you have Python 3 installed.
-2. **Install Dependencies**: Open a terminal in the project directory and invoke:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *This will install the internal GUI framework libraries (PySide6).*
-3. **Run the Application**: With dependencies installed, simply run the main file to spin up the UI:
-   ```bash
-   python main.py
-   ```
-
 ## Development
 
 - `main.py`: Houses the core initialization, application style sheets, and window manager loop.
