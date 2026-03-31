@@ -306,6 +306,7 @@ class MainWindow(QMainWindow):
         self.table_view.customContextMenuRequested.connect(self.show_context_menu)
         self.table_view.horizontalHeader().setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.table_view.horizontalHeader().customContextMenuRequested.connect(self.show_header_menu)
+        self.table_view.selectionModel().currentChanged.connect(self.on_table_selection_changed)
         
         main_layout.addWidget(self.table_view)
 
@@ -342,17 +343,35 @@ class MainWindow(QMainWindow):
         
         self.btn_add_assignment.setEnabled(bool(self.app_state.selected_classroom))
         
+        self.table_model.update_data()
+        self.table_view.setColumnWidth(0, 80) # Keep button width fixed
+        
+        self.update_title_label()
+
+    def update_title_label(self):
         cls = self.app_state.selected_classroom
         ast = self.app_state.selected_assignment
         if cls and ast:
-            self.lbl_selected_context.setText(f"{cls.name} > {ast.name}")
+            base_text = f"{cls.name} > {ast.name}"
+            sel_model = self.table_view.selectionModel()
+            current = sel_model.currentIndex() if sel_model else QModelIndex()
+            if current.isValid():
+                source_index = self.proxy_model.mapToSource(current)
+                col = source_index.column()
+                header_text = self.table_model.headerData(col, Qt.Orientation.Horizontal)
+                if header_text:
+                    self.lbl_selected_context.setText(f"{base_text} > {header_text}")
+                else:
+                    self.lbl_selected_context.setText(base_text)
+            else:
+                self.lbl_selected_context.setText(base_text)
         elif cls:
             self.lbl_selected_context.setText(f"{cls.name} (Select an assignment)")
         else:
             self.lbl_selected_context.setText("Please select a class and assignment to begin.")
-        
-        self.table_model.update_data()
-        self.table_view.setColumnWidth(0, 80) # Keep button width fixed
+
+    def on_table_selection_changed(self, current: QModelIndex, previous: QModelIndex):
+        self.update_title_label()
 
     def on_tree_clicked(self, index: QModelIndex):
         item = self.tree_model.itemFromIndex(index)
