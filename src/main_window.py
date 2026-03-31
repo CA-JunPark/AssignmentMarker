@@ -61,6 +61,7 @@ class SpreadsheetModel(QAbstractTableModel):
         self.marking_schemes = []
 
     def update_data(self):
+        self.beginResetModel()
         self.assignment = self.app_state.selected_assignment
         self.headers = ["Action", "Student Name"]
         if self.assignment:
@@ -68,7 +69,7 @@ class SpreadsheetModel(QAbstractTableModel):
             for scheme in self.marking_schemes:
                 self.headers.append(scheme.name)
         self.headers.extend(["Total", "Note"])
-        self.layoutChanged.emit()
+        self.endResetModel()
 
     def rowCount(self, parent=None):
         if not self.assignment: return 0
@@ -89,7 +90,7 @@ class SpreadsheetModel(QAbstractTableModel):
                 return "" # Button drawn by delegate
             if col == 1:
                 group_name = next((g.name for g in self.app_state.groups if g.id == student.group_id), None)
-                return student.name + (f" (Group: {group_name})" if group_name else "")
+                return student.name + (f" ({group_name})" if group_name else "")
             
             # Note column
             if col == len(self.headers) - 1:
@@ -214,7 +215,7 @@ class ManageGroupsDialog(QDialog):
             self.update_list()
             pw = self.parent()
             if hasattr(pw, 'table_model'):
-                pw.table_model.layoutChanged.emit()
+                pw.table_model.update_data()
 
 class MainWindow(QMainWindow):
     def __init__(self, app_state: AppState):
@@ -549,17 +550,17 @@ class MainWindow(QMainWindow):
         if ok and name.strip():
             try:
                 self.app_state.create_group(name.strip(), [student_id])
-                self.table_model.layoutChanged.emit()
+                self.table_model.update_data()
             except ValueError as e:
                 QMessageBox.critical(self, "Duplicate Error", str(e))
 
     def add_to_group(self, student_id: str, group_id: str):
         self.app_state.add_student_to_group(student_id, group_id)
-        self.table_model.layoutChanged.emit()
+        self.table_model.update_data()
 
     def remove_from_group(self, student_id: str):
         self.app_state.remove_student_from_group(student_id)
-        self.table_model.layoutChanged.emit()
+        self.table_model.update_data()
 
     def manage_groups(self):
         dlg = ManageGroupsDialog(self, self.app_state)
@@ -569,7 +570,6 @@ class MainWindow(QMainWindow):
         if self.confirm_delete(f"Are you sure you want to delete student '{name}'?"):
             self.app_state.delete_student(self.app_state.selected_assignment.id, student_id)
             self.table_model.update_data()
-            self.table_model.layoutChanged.emit()
 
     def show_header_menu(self, pos):
         col = self.table_view.horizontalHeader().logicalIndexAt(pos)
@@ -587,4 +587,3 @@ class MainWindow(QMainWindow):
         if self.confirm_delete(f"Are you sure you want to delete column '{name}'?"):
             self.app_state.delete_marking_scheme(self.app_state.selected_assignment.id, scheme_id)
             self.table_model.update_data()
-            self.table_model.layoutChanged.emit()

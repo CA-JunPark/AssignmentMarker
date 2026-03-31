@@ -1,6 +1,8 @@
 # Assignment Marker
 
-Assignment Marker is a locally hosted, desktop-native Python application for teachers and graders to seamlessly manage their classrooms, assignments, student groupings, and grades. The interface models a traditional spreadsheet while augmenting it with dynamic structure and automated grade processing.
+Assignment Marker is a locally hosted, desktop-native Python application for teachers and graders to seamlessly manage their classrooms, assignments, student groupings, and grades.
+
+![Main Window](screenshot/app.png)
 
 ## Features
 
