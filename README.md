@@ -4,6 +4,8 @@ Assignment Marker is a locally hosted, desktop-native Python application for tea
 
 ![Main Window](screenshot/app.png)
 
+👉 **[Download the latest executable release (v1.0.0)](https://github.com/CA-JunPark/AssignmentMarker/releases/tag/v1.0.0)**
+
 ## Features
 
 - **Classroom & Assignment Management**: Organize grading per class and assignments easily through the left-hand navigation pane. New assignments intelligently auto-populate their rosters from preceding assignments in the same class to save you redundant data entry.
